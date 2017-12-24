@@ -1,0 +1,20 @@
+{
+  "name": "file-recorder",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "joi": "^13.0.2",
+    "koa": "^2.4.1",
+    "koa-body": "^2.5.0",
+    "koa-router": "^7.3.0",
+    "sequelize": "^4.28.1",
+    "sqlite3": "^3.1.13"
+  }
+}
