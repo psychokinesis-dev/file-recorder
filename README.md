@@ -30,18 +30,7 @@ curl -X GET \
   'http://127.0.0.1:3000/v1/list-file?offset=0&limit=10' \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
-  -H 'postman-token: a79fe319-97e6-0bab-6712-474a2d82e52e' \
-  -d '{
-	"name": "中文.mp4",
-	"size": 1234,
-	"partitions": [{
-		"hash": "123456789",
-		"meta": {}
-	}, {
-		"hash": "234567891",
-		"meta": {}
-	}]
-}'
+  -H 'postman-token: a79fe319-97e6-0bab-6712-474a2d82e52e'
 ```
 
 ### detail-file
@@ -51,16 +40,32 @@ curl -X GET \
   'http://127.0.0.1:3000/v1/detail-file?id=1' \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
-  -H 'postman-token: 2e80c335-90b1-7079-953d-8dd6bf6a6a18' \
+  -H 'postman-token: 2e80c335-90b1-7079-953d-8dd6bf6a6a18'
+```
+
+### add-contributor
+为一系列区块添加贡献者
+```bash
+curl -X POST \
+  http://127.0.0.1:3000/v1/add-contributor \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'postman-token: fac5748b-0d0e-0c69-5ebc-8c1d2b42aeee' \
   -d '{
-	"name": "中文.mp4",
-	"size": 1234,
-	"partitions": [{
-		"hash": "123456789",
-		"meta": {}
-	}, {
-		"hash": "234567891",
-		"meta": {}
-	}]
+    "contributor": "abcdefghijk",
+    "partition_hash": ["qweasdzxc", "rtyfgh"]
+}'
+```
+
+### list-contributor
+获取区块的贡献者列表
+```bash
+curl -X POST \
+  http://127.0.0.1:3000/v1/list-contributor \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'postman-token: 2159955e-1f60-1f17-35f6-fc9565bce313' \
+  -d '{
+    "partition_hash": ["qweasdzxc", "rtyfgh"]
 }'
 ```

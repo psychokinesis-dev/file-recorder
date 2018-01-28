@@ -1,7 +1,9 @@
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const Sequelize = require('sequelize');
+const Redis = require('ioredis');
 const myRouters = require('./router');
+const config = require('./config.json');
 
 const app = new Koa();
 
@@ -14,6 +16,7 @@ app.context.db.instance = new Sequelize('database', 'username', 'password', {
     // disable logging; default: console.log
     logging: false
 })
+app.context.cache = new Redis(config.redis.url)
 
 app.context.db.File = app.context.db.instance.define('file', {
     meta: Sequelize.JSON

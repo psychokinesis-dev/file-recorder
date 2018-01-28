@@ -1,5 +1,7 @@
 const Router = require('koa-router');
 const Joi = require('joi');
+const dateFormat = require('dateformat');
+
 
 const router = new Router({
 	prefix: '/v1'
@@ -104,4 +106,68 @@ router.get('/detail-file', async(ctx) => {
 
     ctx.status = 200;
     ctx.body = result;
+});
+
+
+const addContributerSchema = Joi.object().keys({
+    contributor: Joi.string().required(),
+    partition_hash: Joi.array().items(Joi.string()).required()
+});
+
+router.post('/add-contributor', async(ctx) => {
+    const params = ctx.request.body;
+
+    const checkResult = Joi.validate(params, addContributerSchema);
+    if (checkResult.error) {
+        ctx.status = 400;
+        ctx.body = checkResult.error;
+        return;
+    }
+
+    const dateString = dateFormat(new Date(), 'yyyy_mm_dd_HH_MM');
+
+    const cache = ctx.cache;
+    const partitions = params.partition_hash.map((p) => {
+        cache.sadd(p + '-' + dateString, params.contributor, (err) => {
+            if (err) return;  // TODO: handle the error
+
+            cache.expire(p + '-' + dateString, 2 * 60);
+        });
+    });
+
+    ctx.status = 200;
+    ctx.body = {};
+});
+
+
+const listContributerSchema = Joi.object().keys({
+    partition_hash: Joi.array().items(Joi.string()).required()
+});
+
+router.post('/list-contributor', async(ctx) => {
+    const params = ctx.request.body;
+
+    const checkResult = Joi.validate(params, listContributerSchema);
+    if (checkResult.error) {
+        ctx.status = 400;
+        ctx.body = checkResult.error;
+        return;
+    }
+
+    const cache = ctx.cache;
+
+    const contributors = await Promise.all(params.partition_hash.map(async (p) => {
+        const hashs = await cache.keys(p + '-*');
+        const ps = hashs.map(h => cache.smembers(h));
+        const contributorArray = await Promise.all(ps);
+
+        const ca = [].concat.apply([], contributorArray);
+        const union = new Set(ca);
+        return Array.from(union);
+    }));
+
+    ctx.status = 200;
+    ctx.body = {
+        contributors: contributors
+    };
 });
